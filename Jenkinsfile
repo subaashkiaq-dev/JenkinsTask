@@ -12,7 +12,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build started'
-                sh 'ls -la'
+
+                sh '''
+                    echo "Jenkins Build Successful" > build-info.txt
+                    echo "Build Number: ${BUILD_NUMBER}" >> build-info.txt
+                    echo "Build Date: $(date)" >> build-info.txt
+                '''
+
+                sh 'cat build-info.txt'
             }
         }
 
@@ -22,17 +29,12 @@ pipeline {
                 echo 'Test completed successfully'
             }
         }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deployment stage'
-            }
-        }
     }
 
     post {
         success {
             echo 'Pipeline completed successfully!'
+            archiveArtifacts artifacts: 'build-info.txt', fingerprint: true
         }
 
         failure {
@@ -40,5 +42,3 @@ pipeline {
         }
     }
 }
-
-
